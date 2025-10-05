@@ -1,3 +1,4 @@
+// PaperModal.js
 import React from "react";
 import { motion } from "framer-motion";
 
@@ -11,30 +12,24 @@ export default function PaperModal({ product, onClose }) {
 
   const direction = getSlideDirection();
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={handleOverlayClick}
       aria-modal="true"
       role="dialog"
     >
       {/* Dim background */}
-<motion.div
-  className="absolute inset-0 bg-black/40"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 0.4 }}
-  exit={{ opacity: 0 }}
-  onClick={handleOverlayClick}
-/>
+      <motion.div
+        className="absolute inset-0 bg-black/40"
+        initial={{ opacity: 0, pointerEvents: "none" }}
+        animate={{ opacity: 0.4, pointerEvents: "auto" }}
+        exit={{ opacity: 0, pointerEvents: "none" }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        onClick={onClose} // ✅ close when clicking outside
+      />
 
       {/* Paper container */}
       <motion.div
@@ -43,12 +38,13 @@ export default function PaperModal({ product, onClose }) {
           backgroundImage:
             "linear-gradient(white, white), url('https://www.transparenttextures.com/patterns/paper-fibers.png')",
           backgroundBlendMode: "multiply",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.25)", // ✨ stronger shadow for paper edge
         }}
         initial={{ x: direction * 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: direction * 200, opacity: 0 }}
         transition={{ type: "spring", stiffness: 120, damping: 18 }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()} // ✅ prevent click inside from closing
       >
         {/* Close button */}
         <button
@@ -66,7 +62,7 @@ export default function PaperModal({ product, onClose }) {
           <span></span>
         </div>
 
-        {/* Main content (flex-grow so footer stays visible) */}
+        {/* Main content */}
         <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
           <img
             src={product.image}
@@ -75,12 +71,11 @@ export default function PaperModal({ product, onClose }) {
           />
         </div>
 
-        {/* Footer row (fixed at bottom of paper) */}
+        {/* Footer row */}
         <div className="px-4 pb-4 pt-2 text-xs text-gray-500 font-mono flex justify-between flex-shrink-0 border-t border-gray-200">
           <span>{product.sku}</span>
-          <span>{}</span>
+          <span></span>
           <span>{product.id}</span>
-
         </div>
       </motion.div>
     </motion.div>
